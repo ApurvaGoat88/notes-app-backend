@@ -64,8 +64,9 @@ def getNotebyID(request,pk):
 @csrf_exempt
 def createNote(request):
     
-        data = json.loads(request.body)# Use get to avoid KeyError if 'body' is not present
-        note = Note(body=data)
+        data = json.loads(request.body)
+        body = data['body']      # Use get to avoid KeyError if 'body' is not present
+        note = Note(body=body)
         note.save()  # Use .save() method to save the instance
         ser = NoteSerializer(note, many=False)
         return JsonResponse(ser.data,safe=False)
@@ -86,4 +87,4 @@ def updateNote(request,pk):
 def deleteNote(request,pk):
     note = Note.objects.get(id= pk)
     note.delete()
-    return JsonResponse("Note deleted")
+    return JsonResponse("Note deleted",safe=False)
