@@ -1,4 +1,6 @@
+import json
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import NoteSerializer
@@ -59,18 +61,18 @@ def getNotebyID(request,pk):
 
 
 
-
+@csrf_exempt
 def createNote(request):
     
-        body = request.data.get("body", "")  # Use get to avoid KeyError if 'body' is not present
-        note = Note(body=body)
+        data = json.loads(request.body)# Use get to avoid KeyError if 'body' is not present
+        note = Note(body=data)
         note.save()  # Use .save() method to save the instance
         ser = NoteSerializer(note, many=False)
         return JsonResponse(ser.data,safe=False)
  
  
    
-
+@csrf_exempt
 def updateNote(request,pk):
     data = request.data 
     note = Note.objects.get(id = pk)
