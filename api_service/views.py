@@ -1,10 +1,10 @@
-
+from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import NoteSerializer
 from rest_framework import status
 from .models import Note
-@api_view(['POST','GET','DELETE','PUT'])
+
 def getRoutes(request):
     routes = [
         {
@@ -41,36 +41,36 @@ def getRoutes(request):
         }
     ]
     
-    return Response(routes)
+    return JsonResponse(routes,safe=False)
 
-@api_view(['GET'])
+
 def getNotes(request):
     notes = Note.objects.all()
     ser = NoteSerializer(notes,many = True)
     
-    return Response(ser.data)
+    return JsonResponse(ser.data,safe=False)
 
 
-@api_view(['GET'])
+
 def getNotebyID(request,pk):
     notes = Note.objects.get(id =pk)
     ser = NoteSerializer(notes)
-    return Response(ser.data)
+    return JsonResponse(ser.data,safe=False)
 
 
 
-@api_view(['POST'])
+
 def createNote(request):
     
         body = request.data.get("body", "")  # Use get to avoid KeyError if 'body' is not present
         note = Note(body=body)
         note.save()  # Use .save() method to save the instance
         ser = NoteSerializer(note, many=False)
-        return Response(ser.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(ser.data,safe=False)
  
  
    
-@api_view(['PUT'])
+
 def updateNote(request,pk):
     data = request.data 
     note = Note.objects.get(id = pk)
@@ -78,12 +78,10 @@ def updateNote(request,pk):
     if ser.is_valid():
         ser.save()
         
-    return Response(ser.data)
+    return JsonResponse(ser.data,safe=False)
 
     
-    
-@api_view(['DELETE'])
 def deleteNote(request,pk):
     note = Note.objects.get(id= pk)
     note.delete()
-    return Response("Note deleted")
+    return JsonResponse("Note deleted")
